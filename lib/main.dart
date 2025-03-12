@@ -34,6 +34,11 @@ showUnselectedLabels: false,
     
   ),
         ),
+        appBarTheme: AppBarTheme(
+           elevation: 1,
+               backgroundColor: Colors.blueGrey.shade100,
+               centerTitle: true,
+        ),
         primarySwatch: Colors.blueGrey,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
       ),

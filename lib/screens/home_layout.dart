@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
  import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/cubit/todo_states.dart';
+import 'package:todo/shared_component/custom_text.dart';
 
 class HomeLayout extends StatelessWidget {
   const HomeLayout({super.key});
@@ -32,7 +33,10 @@ class HomeLayout extends StatelessWidget {
               ),
             ),
             body: todoCubit.screens[todoCubit.currentIndex],
-            
+            appBar: AppBar(
+               title: customText(text: todoCubit.pageNameOnAppbae[todoCubit.currentIndex],textColor: Colors.blueGrey,textSize: 25),
+               
+            ),
          
           );
         },

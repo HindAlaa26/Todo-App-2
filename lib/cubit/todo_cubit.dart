@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/cubit/todo_states.dart';
 import 'package:todo/screens/archieve_tasks.dart';
@@ -44,25 +43,18 @@ class ToDoCubit extends Cubit<TodoStates>
     DoneTasks(),
     ArchieveTasks()
   ];
+ 
+ List<String> pageNameOnAppbae= [
+  "New Tasks",
+  "Done Tasks",
+  "Archieve Tasks"
+ ];
 
-/* List<SpeedDialChild> homeMenu =  [
-          SpeedDialChild(
-            child: Icon(Icons.task, color: Colors.blueGrey,),
-            label: "Add Task",
-            
-            onTap: () {},
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.folder_copy,color: Colors.blueGrey,),
-            label: "Add Folder",
-            onTap: () {},
-          ),
-        ]; */
 
 List<Map> newTask =[];
 List<Map> doneTask =[];
 List<Map> archieveTask =[];
-List<Map> newFolder =[];
+//List<Map> newFolder =[];
 
  String? taskTime;
 void changeTaskTime({value,context})

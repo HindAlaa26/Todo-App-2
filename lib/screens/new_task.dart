@@ -31,7 +31,7 @@ class NewTask extends StatelessWidget {
 
           floatingActionButton: SpeedDial(
             animatedIcon: AnimatedIcons.menu_close,
-            animatedIconTheme: IconThemeData(color: Colors.lightBlue.shade900),
+            animatedIconTheme: IconThemeData(color: Colors.blueGrey),
             backgroundColor: Colors.blueGrey.shade200,
             spacing: 10,
             overlayColor: Colors.blueGrey.shade200,
@@ -230,7 +230,7 @@ class AddTask extends StatelessWidget {
                             lastDate: DateTime.parse('2027-07-01'),
                           ).then((value) {
                             todoCubit.changeTaskDate(value: value);
-                            print(DateFormat.yMMMd().format(value!));
+                           
                           });
                         },
                         icon: Icon(
@@ -261,12 +261,13 @@ class AddTask extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: () {
+                          
                           showTimePicker(
                             context: context,
                             initialTime: TimeOfDay.now(),
                           ).then((value) {
                             todoCubit.changeTaskTime(value: value, context: context);
-                            print(value?.format(context));
+                           
                           });
                         },
                         icon: Icon(
