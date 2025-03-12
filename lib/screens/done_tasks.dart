@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:todo/shared_component/custom_text.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo/cubit/todo_cubit.dart';
+import 'package:todo/cubit/todo_states.dart';
+import 'package:todo/shared_component/task_item.dart';
 
 class DoneTasks extends StatelessWidget {
   const DoneTasks({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 30,
-        children: [
-          Icon(Icons.task_alt,size: 99,color: Colors.blueGrey.shade200,),
-          customText( text: "Done Tasks",textSize: 40,textColor: Colors.blueGrey.shade200),
-        ],
-      )),
+    return BlocConsumer<ToDoCubit, TodoStates>(
+      listener: (context, state) {
+      },
+      builder: (context, state) {
+        var doneTasks = ToDoCubit.get(context).doneTask;
+        return Scaffold(
+          body: tasksBuilder(
+            tasks: doneTasks,
+            iconEmpty: Icons.task_alt,
+            textIsEmpty: "Done Tasks",
+          ),
+        );
+      },
     );
   }
 }

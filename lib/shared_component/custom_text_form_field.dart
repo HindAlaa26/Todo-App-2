@@ -22,7 +22,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     padding: const EdgeInsets.only(top: 20),
     child: TextFormField(
       cursorColor: Colors.lightBlue.shade900,
-    textInputAction: TextInputAction.next,
+    textInputAction: TextInputAction.done,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       controller: widget.controller ,
       obscureText: widget.isPassword? visibleIcon : false,
