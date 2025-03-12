@@ -6,6 +6,7 @@ import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/cubit/todo_states.dart';
 import 'package:todo/shared_component/custom_text.dart';
 import 'package:todo/shared_component/custom_text_form_field.dart';
+import 'package:todo/shared_component/folder_item.dart';
 import 'package:todo/shared_component/task_item.dart';
 
 class NewTask extends StatelessWidget {
@@ -21,13 +22,29 @@ class NewTask extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         var tasks = ToDoCubit.get(context).newTask;
+        var folders = ToDoCubit.get(context).folders;
+       
         return Scaffold(
           key: scaffoldKey,
-          body: tasksBuilder(
-            tasks: tasks,
-            iconEmpty: Icons.task_outlined,
-            textIsEmpty: "New Task",
+          body: Column(
+            children: [
+              Expanded(
+                child: folderBuilder(
+                  folder: folders, 
+                  iconEmpty: Icons.folder_copy, 
+                  textIsEmpty: "No Folder",),
+              ),
+                Expanded(
+                  child: tasksBuilder(
+                              tasks: tasks,
+                              iconEmpty: Icons.task_outlined,
+                              textIsEmpty: "No Task",
+                  ),
+                )
+            ],
           ),
+          
+         
 
           floatingActionButton: SpeedDial(
             animatedIcon: AnimatedIcons.menu_close,
@@ -83,71 +100,79 @@ class AddFolder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.all(20),
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.blueGrey.shade200,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            offset: Offset(1, 1),
-            blurRadius: 5,
-            color: Colors.blueGrey.shade50,
-          ),
-        ],
-      ),
-      child: Form(
-        key: formdKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            customText(
-              text: "Folder Name: ",
-              textSize: 20,
-              textFontWeight: FontWeight.w400,
-              textColor: Colors.lightBlue.shade900,
-            ),
-            CustomTextFormField(
-              controller: folderNameController,
-              text: "Folder Name",
-            ),
-            Padding(
-              padding: const EdgeInsets.all(18.0),
-
-              child: MaterialButton(
-                color: Colors.lightBlue.shade900,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                minWidth: double.infinity,
-                onPressed: () {
-                  if (formdKey.currentState!.validate()) {
-                    //* todoCubit.addFolder(folderName.text);
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: customText(
-                          text: "Folder Added Successfully",
-                          textColor: Colors.white,
-                        ),
-                        backgroundColor: Colors.lightBlue.shade900,
-                      ),
-                    );
-
-                    Navigator.pop(context);
-                    folderNameController.clear();
-                  }
-                },
-                child: customText(text: "Add", textColor: Colors.white),
+    return BlocBuilder<ToDoCubit, TodoStates>(
+      builder: (context, state) {
+        var todoCubit = ToDoCubit.get(context);
+        return Container(
+          width: double.infinity,
+          margin: EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.blueGrey.shade200,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                offset: Offset(1, 1),
+                blurRadius: 5,
+                color: Colors.blueGrey.shade50,
               ),
+            ],
+          ),
+          child: Form(
+            key: formdKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                customText(
+                  text: "Folder Name: ",
+                  textSize: 20,
+                  textFontWeight: FontWeight.w400,
+                  textColor: Colors.lightBlue.shade900,
+                ),
+                CustomTextFormField(
+                  controller: folderNameController,
+                  text: "Folder Name",
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+
+                  child: MaterialButton(
+                    color: Colors.lightBlue.shade900,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    minWidth: double.infinity,
+                    onPressed: () {
+                      if (formdKey.currentState!.validate()) {
+                          todoCubit.addFolder(
+                          folderName: folderNameController.text,
+                          folderDate: DateFormat.yMMMd().format(DateTime.now()),
+                          folderTime: TimeOfDay.now().format(context),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: customText(
+                              text: "Folder Added Successfully",
+                              textColor: Colors.white,
+                            ),
+                            backgroundColor: Colors.lightBlue.shade900,
+                          ),
+                        );
+
+                        Navigator.pop(context);
+                        folderNameController.clear();
+                      }
+                    },
+                    child: customText(text: "Add", textColor: Colors.white),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -162,13 +187,10 @@ class AddTask extends StatelessWidget {
   final GlobalKey<FormState> formdKey;
   final TextEditingController taskNameController;
 
-  
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ToDoCubit, TodoStates>(
-      listener: (context, state) {
-        
-      },
+    return BlocBuilder<ToDoCubit, TodoStates>(
+      
       builder: (context, state) {
         var todoCubit = ToDoCubit.get(context);
         return Container(
@@ -230,7 +252,6 @@ class AddTask extends StatelessWidget {
                             lastDate: DateTime.parse('2027-07-01'),
                           ).then((value) {
                             todoCubit.changeTaskDate(value: value);
-                           
                           });
                         },
                         icon: Icon(
@@ -261,13 +282,14 @@ class AddTask extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: () {
-                          
                           showTimePicker(
                             context: context,
                             initialTime: TimeOfDay.now(),
                           ).then((value) {
-                            todoCubit.changeTaskTime(value: value, context: context);
-                           
+                            todoCubit.changeTaskTime(
+                              value: value,
+                              context: context,
+                            );
                           });
                         },
                         icon: Icon(
@@ -279,7 +301,7 @@ class AddTask extends StatelessWidget {
                     ],
                   ),
                 ),
-          
+
                 Padding(
                   padding: const EdgeInsets.all(18.0),
 
@@ -291,16 +313,17 @@ class AddTask extends StatelessWidget {
                     minWidth: double.infinity,
                     onPressed: () {
                       if (formdKey.currentState!.validate()) {
-                       
-                       todoCubit.addTask(
-                        taskName: taskNameController.text,
-                         taskDate:  todoCubit.taskDate != null
-                                ? todoCubit.taskDate!
-                                : DateFormat.yMMMd().format(DateTime.now()), 
-                         taskTime:     todoCubit.taskTime != null
-                                ? todoCubit.taskTime!
-                                : TimeOfDay.now().format(context),
-                       );
+                        todoCubit.addTask(
+                          taskName: taskNameController.text,
+                          taskDate:
+                              todoCubit.taskDate != null
+                                  ? todoCubit.taskDate!
+                                  : DateFormat.yMMMd().format(DateTime.now()),
+                          taskTime:
+                              todoCubit.taskTime != null
+                                  ? todoCubit.taskTime!
+                                  : TimeOfDay.now().format(context),
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             duration: Duration(seconds: 1),

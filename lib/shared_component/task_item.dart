@@ -5,7 +5,7 @@ import 'package:todo/shared_component/custom_text.dart';
 Widget taskItem(Map model,context)
 {
   return Dismissible(
-    key: Key(model["id"].toString()),
+    key: Key(model["id"]?.toString() ?? ''),
 
   background: Container(
     padding: EdgeInsets.symmetric(horizontal: 20),
@@ -47,14 +47,14 @@ Widget taskItem(Map model,context)
         CircleAvatar(
           radius: 40,
           backgroundColor: Colors.blueGrey.shade200,
-          child: customText(text: model['Task Time'],textColor: Colors.lightBlue.shade900),
+          child: customText(text: model['Task Time']?? 'No Time',textColor: Colors.lightBlue.shade900),
         ),
         Expanded(
           child: Column(
             spacing: 6,
             children: [
-              customText(text: model['Task Name'],textSize: 20),
-                      customText(text: model['Task Date'],textSize: 18,textColor: Colors.lightBlue.shade900),
+              customText(text: model['Task Name']?? 'No Name',textSize: 20),
+                      customText(text: model['Task Date']?? 'No Date',textSize: 18,textColor: Colors.lightBlue.shade900),
 
             ],
           ),
@@ -74,6 +74,8 @@ Widget taskItem(Map model,context)
 
     );
 }
+
+
 Widget tasksBuilder({
   required List tasks,
   required IconData iconEmpty,
@@ -82,7 +84,7 @@ Widget tasksBuilder({
 {
 
   return tasks.isNotEmpty ? ListView.separated(
-      itemBuilder: (context, index) => taskItem(tasks[index],context),
+      itemBuilder: (context, index) =>  taskItem(tasks[index],context),
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.only(left: 25,right: 10),
         child: Divider(thickness: 1,color: Colors.blueGrey,),

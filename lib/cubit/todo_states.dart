@@ -4,9 +4,10 @@ abstract class TodoStates {}
  class TodoChangeTaskTimeState extends TodoStates{}
  class TodoChangeTaskDateState extends TodoStates{}
  class TodoAddTaskState extends TodoStates{}
- class TodoAddNewTaskState extends TodoStates{}
  class TodoRemoveTaskState extends TodoStates {}
- class TodoTaskDoneState extends TodoStates {}
- class TodoTaskArchieveState extends TodoStates {}
  class TodoUpdateTaskStatusState extends TodoStates {}
+ class TodoAddFolderState extends TodoStates {}
+ class TodoRemoveFolderState extends TodoStates {}
+ class TodoGetTasksState extends TodoStates {}
+ class TodoGetFoldersState extends TodoStates {}
 

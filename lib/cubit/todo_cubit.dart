@@ -54,7 +54,7 @@ class ToDoCubit extends Cubit<TodoStates>
 List<Map> newTask =[];
 List<Map> doneTask =[];
 List<Map> archieveTask =[];
-//List<Map> newFolder =[];
+
 
  String? taskTime;
 void changeTaskTime({value,context})
@@ -72,6 +72,8 @@ void changeTaskDate({value})
 
 
 List<Map> allTasks = [];
+ List<Map> folders =[];
+
 
  void addTask({
     required String taskName,
@@ -89,55 +91,96 @@ List<Map> allTasks = [];
     getTasks();
   }
  
- void updateTaskStatus(
-  {
-    required Map task,
-    required String status,
+void updateTaskStatus({
+  required Map task,
+  required String status,
+}) {
+  int index = allTasks.indexWhere((element) =>
+      element["Task Name"] == task["Task Name"] &&
+      element["Task Date"] == task["Task Date"] &&
+      element["Task Time"] == task["Task Time"]);
+
+  if (index != -1) {
+    allTasks[index]["status"] = status;
+    getTasks();  
+    emit(TodoUpdateTaskStatusState());
+  } else {
+    print("Task not found in allTasks");
   }
- )
- {
-   
-      int index = allTasks.indexWhere((element) =>
-       element["Task Name"] == task["Task Name"]
-      ) ;
-      allTasks[index]['status'] = status;
-   
-  
-   emit(TodoUpdateTaskStatusState());
-    getTasks();
- }
+}
+
+
+
 
  void removeTask({
   required Map task,
  })
  {
    allTasks.remove(task);
+   folders.remove(task);
    emit(TodoRemoveTaskState());
     getTasks();
  }
 
  void getTasks()
  {
-   newTask = [];
-   doneTask = [];
-   archieveTask = [];
+   newTask.clear();
+   doneTask.clear();
+   archieveTask.clear();
+   
    for (var task in allTasks) {
      if (task["status"] == "New")
      {
        newTask.add(task);
-       emit(TodoAddNewTaskState());
+      
      }
      else if (task["status"] == "Done")
      {
       doneTask.add(task);
-      emit(TodoTaskDoneState());
+     
      }
      else if(task["status"] == "Archieve")
      {
        archieveTask.add(task);
-       emit(TodoTaskArchieveState());
+     }
+     else if (task["status"] == "New Folder")
+     {
+       folders.add(task);
+     
      }
    }
+   print("All Tasks: $allTasks");
+print("New Tasks: $newTask");
+print("Done Tasks: $doneTask");
+print("Archive Tasks: $archieveTask");
+
+   emit(TodoGetTasksState()); 
    
  }
+
+void addFolder({
+    required String folderName,
+    required String folderDate,
+    required String folderTime,
+  }) {
+    folders.add({
+      'Folder Name': folderName,
+      'Folder Date': folderDate,
+      'Folder Time': folderTime,
+      "status": "New Folder"
+    });
+
+    emit(TodoAddFolderState());
+    
+  }
+ 
+/* void removeFolder({
+  required Map folder,
+ })
+ {
+   allTasks.remove(folder);
+   emit(TodoRemoveFolderState());
+    getTasks();
+ } */
+
 }
