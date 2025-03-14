@@ -11,10 +11,8 @@ class HomeLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ToDoCubit(),
-      child: BlocConsumer<ToDoCubit, TodoStates>(
-        listener: (context, state) {
-          
-        },
+      child: BlocBuilder<ToDoCubit, TodoStates>(
+       
         builder: (context, state) {
           var todoCubit = ToDoCubit.get(context);
           return Scaffold(
@@ -34,6 +32,7 @@ class HomeLayout extends StatelessWidget {
             ),
             body: todoCubit.screens[todoCubit.currentIndex],
             appBar: AppBar(
+              leading: SizedBox(),
                title: customText(text: todoCubit.pageNameOnAppbae[todoCubit.currentIndex],textColor: Colors.blueGrey,textSize: 25),
                
             ),

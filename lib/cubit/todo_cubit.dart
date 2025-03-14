@@ -72,8 +72,6 @@ void changeTaskDate({value})
 
 
 List<Map> allTasks = [];
- List<Map> folders =[];
-
 
  void addTask({
     required String taskName,
@@ -109,9 +107,6 @@ void updateTaskStatus({
   }
 }
 
-
-
-
  void removeTask({
   required Map task,
  })
@@ -119,7 +114,19 @@ void updateTaskStatus({
    allTasks.remove(task);
    folders.remove(task);
    emit(TodoRemoveTaskState());
+   
     getTasks();
+ }
+
+ 
+ void removeFolder({
+  required Map folder,
+ })
+ {
+  
+   folders.remove(folder);
+   emit(TodoRemoveFolderState());
+   
  }
 
  void getTasks()
@@ -127,6 +134,7 @@ void updateTaskStatus({
    newTask.clear();
    doneTask.clear();
    archieveTask.clear();
+   
    
    for (var task in allTasks) {
      if (task["status"] == "New")
@@ -143,11 +151,8 @@ void updateTaskStatus({
      {
        archieveTask.add(task);
      }
-     else if (task["status"] == "New Folder")
-     {
-       folders.add(task);
-     
-     }
+   
+  
    }
    print("All Tasks: $allTasks");
 print("New Tasks: $newTask");
@@ -158,29 +163,39 @@ print("Archive Tasks: $archieveTask");
    
  }
 
-void addFolder({
-    required String folderName,
-    required String folderDate,
-    required String folderTime,
-  }) {
-    folders.add({
-      'Folder Name': folderName,
-      'Folder Date': folderDate,
-      'Folder Time': folderTime,
-      "status": "New Folder"
-    });
-
-    emit(TodoAddFolderState());
-    
-  }
  
-/* void removeFolder({
-  required Map folder,
- })
- {
-   allTasks.remove(folder);
-   emit(TodoRemoveFolderState());
-    getTasks();
- } */
+
+ List<Map> folders =[];
+
+void createFolder({required String folderName}) {
+   folders.add({
+   "Folder Name": folderName,
+    "Folder Date": DateFormat.yMMMd().format(DateTime.now()),
+    "Folder Time": DateFormat.jm().format(DateTime.now()),
+    "status": "New Folder",
+    "tasks": <Map>[]
+    }); 
+
+  print("📂 Updated Folders List After Adding Folder: $folders");
+
+  emit(TodoFolderCreatedState());
+ 
+}
+
+
+
+void addTaskToFolder({required String folderName, required Map task, required int folderIndex}) {
+  if (folderIndex < 0 || folderIndex >= folders.length) {
+    print("Error: Folder index is out of range: $folderIndex");
+    return;
+  }
+
+  folders[folderIndex]["tasks"].add(task);
+  print(" Task added to folder: $folderName");
+  emit(TodoAddTaskToFolderState());
+} 
+
+ 
+ 
 
 }

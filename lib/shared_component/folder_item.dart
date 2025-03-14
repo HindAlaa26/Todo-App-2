@@ -3,8 +3,10 @@ import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/screens/folder_screen.dart';
 import 'package:todo/shared_component/custom_text.dart';
 
-Widget folderItem(Map model,context)
+Widget folderItem(Map model,context,int index)
 {
+   print(" 📂>>>>>>>>>>>>>>>>>>.Folder in folder Item $model");
+   print(" 📂📂>>>>>>>>>>>>>>>>>>.Folder in folder Item from Cubit ${ToDoCubit.get(context).folders}");
   return Dismissible(
     key: Key(model["id"].toString()),
 
@@ -22,11 +24,13 @@ Widget folderItem(Map model,context)
   ),
   direction: DismissDirection.startToEnd,
   onDismissed: (direction) {
-    ToDoCubit.get(context).removeTask(task: model);
+    ToDoCubit.get(context).removeFolder(folder: model);
     }, 
     child: InkWell(
       onTap: (){
-        Navigator.push(context,MaterialPageRoute(builder: (context) => FolderScreen(folderName: model["Folder Name"],),));
+print("📂 Folders List from cubit (Before Navigation): ${ToDoCubit.get(context).folders}");
+
+        Navigator.push(context,MaterialPageRoute(builder: (context) => FolderScreen(folderIndex:index ,folderName: model["Folder Name"],),));
       },
       child: Container(
       padding: EdgeInsets.all(18),
@@ -94,9 +98,11 @@ Widget folderBuilder({
   required String textIsEmpty,
 })
 {
+         print(" 📂>>>>>>>>>>>>>>>>>>.Folder in folder builder $folder");
+
 
   return folder.isNotEmpty ? ListView.separated(
-      itemBuilder: (context, index) => folderItem( folder[index],  context),
+      itemBuilder: (context, index) => folderItem( folder[index],  context, index),
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.only(left: 25,right: 10),
         child: Divider(thickness: 1,color: Colors.blueGrey,),

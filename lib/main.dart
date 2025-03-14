@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/screens/home_layout.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ToDoCubit()),
+      ],
+      child: MyApp(),
+    ),
+  );
+}
 
-} 
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
