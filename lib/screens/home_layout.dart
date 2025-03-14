@@ -9,37 +9,34 @@ class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ToDoCubit(),
-      child: BlocBuilder<ToDoCubit, TodoStates>(
-       
-        builder: (context, state) {
-          var todoCubit = ToDoCubit.get(context);
-          return Scaffold(
-            bottomNavigationBar: Padding(
-              padding: const EdgeInsets.only(top: 10,bottom: 25,left: 25,right: 25),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(25),
-                child: BottomNavigationBar(
-                  
-                  items: todoCubit.navItems,
-                  currentIndex: todoCubit.currentIndex,
-                  onTap: (value) {
-                    todoCubit.changeIndex(value);
-                  },
-                ),
+    return BlocBuilder<ToDoCubit, TodoStates>(
+     
+      builder: (context, state) {
+        var todoCubit = ToDoCubit.get(context);
+        return Scaffold(
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.only(top: 10,bottom: 25,left: 25,right: 25),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(25),
+              child: BottomNavigationBar(
+                
+                items: todoCubit.navItems,
+                currentIndex: todoCubit.currentIndex,
+                onTap: (value) {
+                  todoCubit.changeIndex(value);
+                },
               ),
             ),
-            body: todoCubit.screens[todoCubit.currentIndex],
-            appBar: AppBar(
-              leading: SizedBox(),
-               title: customText(text: todoCubit.pageNameOnAppbae[todoCubit.currentIndex],textColor: Colors.blueGrey,textSize: 25),
-               
-            ),
-         
-          );
-        },
-      ),
+          ),
+          body: todoCubit.screens[todoCubit.currentIndex],
+          appBar: AppBar(
+            leading: SizedBox(),
+             title: customText(text: todoCubit.pageNameOnAppbae[todoCubit.currentIndex],textColor: Colors.blueGrey,textSize: 25),
+             
+          ),
+       
+        );
+      },
     );
   }
 }
