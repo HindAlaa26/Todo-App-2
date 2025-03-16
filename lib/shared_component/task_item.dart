@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/shared_component/custom_text.dart';
 
-Widget taskItem(Map model,context)
+Widget taskItem(Map model,context,isFolder,folderIndex,taskIndex)
 {
   return Dismissible(
     key: Key(model["id"]?.toString() ?? ''),
@@ -21,7 +21,8 @@ Widget taskItem(Map model,context)
   ),
   direction: DismissDirection.startToEnd,
   onDismissed: (direction) {
-    ToDoCubit.get(context).removeTask(task: model);
+      isFolder? ToDoCubit.get(context).removeTaskInFolder(folderIndex:folderIndex,taskIndex: taskIndex):
+         ToDoCubit.get(context).removeTask(task: model);
     }, 
     child: Container(
     padding: EdgeInsets.all(18),
@@ -62,12 +63,20 @@ Widget taskItem(Map model,context)
       
         SizedBox(width: 8),
         IconButton(onPressed: (){
-          ToDoCubit.get(context).updateTaskStatus( task: model, status: "Done");
-         
-        }, icon: Icon(Icons.task_alt,color: Colors.blueGrey,size: 30,)),
+        isFolder?
+           ToDoCubit.get(context).updateTaskInFolderStatus( task: model,folderIndex: folderIndex, status: "Done"):
+       
+           
+       ToDoCubit.get(context).updateTaskStatus( task: model, status: "Done");
+        
+        }, icon: Icon(Icons.task_alt,color: isFolder?( model["doneColor"]? Colors.green : Colors.blueGrey) : Colors.blueGrey,size: 30,)),
         IconButton(onPressed: (){
+         isFolder?
+           ToDoCubit.get(context).updateTaskInFolderStatus( task: model,folderIndex: folderIndex, status: "Archieve"):
+          
         ToDoCubit.get(context).updateTaskStatus( task: model, status: "Archieve");
-        }, icon: Icon(Icons.archive_outlined,color: Colors.blueGrey,size: 30,)),
+          
+        }, icon: Icon(Icons.archive_outlined,color: isFolder? ( model["archiveColor"]? Colors.green : Colors.blueGrey) : Colors.blueGrey ,size: 30,)),
       ],
     ),
   ),
@@ -80,11 +89,13 @@ Widget tasksBuilder({
   required List tasks,
   required IconData iconEmpty,
   required String textIsEmpty,
+  bool isFolder = false,
+  int? folderIndex ,
 })
 {
 
   return tasks.isNotEmpty ? ListView.separated(
-      itemBuilder: (context, index) =>  taskItem(tasks[index],context),
+      itemBuilder: (context, index) =>  taskItem(tasks[index],context,isFolder,folderIndex,index),
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.only(left: 25,right: 10),
         child: Divider(thickness: 1,color: Colors.blueGrey,),

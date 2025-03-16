@@ -13,13 +13,15 @@ class DoneTasks extends StatelessWidget {
       listener: (context, state) {
       },
       builder: (context, state) {
+      
         var doneTasks = ToDoCubit.get(context).doneTask;
+
         return Scaffold(
           body: tasksBuilder(
-            tasks: doneTasks,
-            iconEmpty: Icons.task_alt,
-            textIsEmpty: "Done Tasks",
-          ),
+                  tasks: doneTasks,
+                  iconEmpty: Icons.task_alt,
+                  textIsEmpty: "Done Tasks",
+                ),
         );
       },
     );

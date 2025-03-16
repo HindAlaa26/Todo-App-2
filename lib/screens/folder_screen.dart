@@ -42,6 +42,8 @@ class FolderScreen extends StatelessWidget {
         tasks: ToDoCubit.get(context).folders[folderIndex]["tasks"],
         iconEmpty: Icons.task_outlined,
         textIsEmpty: "No Task",
+        isFolder: true,
+        folderIndex: folderIndex,
       )
     : Center(child: customText(text: "No folder found")),
     

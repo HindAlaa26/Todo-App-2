@@ -112,23 +112,11 @@ void updateTaskStatus({
  })
  {
    allTasks.remove(task);
-   folders.remove(task);
+  
    emit(TodoRemoveTaskState());
    
     getTasks();
  }
-
- 
- void removeFolder({
-  required Map folder,
- })
- {
-  
-   folders.remove(folder);
-   emit(TodoRemoveFolderState());
-   
- }
-
  void getTasks()
  {
    newTask.clear();
@@ -162,8 +150,91 @@ print("Archive Tasks: $archieveTask");
    emit(TodoGetTasksState()); 
    
  }
+ 
+
+
+/////////////////////////////////////////////////////////////////
+void removeTaskInFolder({
+  required int folderIndex,
+  required int taskIndex,
+}) {
+  if (folderIndex >= 0 && folderIndex < folders.length) {
+    if (taskIndex >= 0 && taskIndex < folders[folderIndex]["tasks"].length) {
+      folders[folderIndex]["tasks"].removeAt(taskIndex);
+      emit(TodoRemoveTaskInFolderState());
+    } else {
+      print("Error: Task index out of range");
+    }
+  } else {
+    print("Error: Folder index out of range");
+  }
+}
+
 
  
+ void removeFolder({
+  required Map folder,
+ })
+ {
+  
+   folders.remove(folder);
+   emit(TodoRemoveFolderState());
+   
+ }
+
+
+
+ 
+
+
+
+ void getTasksColorInFolder() {
+ 
+
+  for (var folder in folders) {
+    for (var task in folder["tasks"]) {
+      if (task["status"] == "New") {
+       task["doneColor"] = false;
+        task["archiveColor"] = false;
+      } else if (task["status"] == "Done") {
+        task["doneColor"] = true;
+         task["archiveColor"] = false;
+      } else if (task["status"] == "Archieve") {
+       task["archiveColor"] = true;
+        task["doneColor"] = false;
+      }
+    }
+  }
+
+  emit(TodoGetTasksColorInFoldersState());  
+}
+
+ 
+void updateTaskInFolderStatus({
+  required Map task,
+  required String status,
+  required int folderIndex,
+}) {
+  if (folderIndex < 0 || folderIndex >= folders.length) {
+    print("Error: Folder index is out of range: $folderIndex");
+    return;
+  }
+
+  int taskIndex = folders[folderIndex]["tasks"].indexWhere((t) =>
+      t["Task Name"] == task["Task Name"] &&
+      t["Task Date"] == task["Task Date"] &&
+      t["Task Time"] == task["Task Time"]);
+
+  if (taskIndex != -1) {
+    folders[folderIndex]["tasks"][taskIndex]["status"] = status;
+    getTasksColorInFolder();
+    emit(TodoUpdateTaskStatusInFolderState());
+  } else {
+    print("Task not found in folder");
+  }
+}
+
+
 
  List<Map> folders =[];
 
@@ -172,7 +243,7 @@ void createFolder({required String folderName}) {
    "Folder Name": folderName,
     "Folder Date": DateFormat.yMMMd().format(DateTime.now()),
     "Folder Time": DateFormat.jm().format(DateTime.now()),
-    "status": "New Folder",
+    "status": "New",
     "tasks": <Map>[]
     }); 
 

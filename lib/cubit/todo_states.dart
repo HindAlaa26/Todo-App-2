@@ -13,4 +13,13 @@ abstract class TodoStates {}
  class TodoAddTaskToFolderState extends TodoStates {}
  class TodoFolderCreatedState extends TodoStates {}
  class TodoRemoveFolderState extends TodoStates {}
+ class TodoRemoveTaskInFolderState extends TodoStates {}
+ class TodoUpdateTaskStatusInFolderState extends TodoStates {}
+ class TodoGetFoldersState extends TodoStates {}
+ class TodoUpdateFolderState extends TodoStates {}
+ class TodoGetTasksColorInFoldersState extends TodoStates {}
+ class TodoGetTasksDoneColorInFoldersState extends TodoStates {}
+ class TodoGetTasksArchieveColorInFoldersState extends TodoStates {}
+ 
+
  

@@ -158,6 +158,12 @@ class AddTask extends StatelessWidget {
                           "Task Time": todoCubit.taskTime != null
                                   ? todoCubit.taskTime!
                                   : TimeOfDay.now().format(context),
+                                 "status": "New",
+                                 "doneColor" : false,
+                                 "archiveColor" : false,
+                                 
+                                
+
                           },
                       
                       
