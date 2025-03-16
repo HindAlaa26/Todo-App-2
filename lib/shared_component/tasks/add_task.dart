@@ -161,7 +161,7 @@ class AddTask extends StatelessWidget {
                                  "status": "New",
                                  "doneColor" : false,
                                  "archiveColor" : false,
-                                 
+                                    'id': DateTime.now().millisecondsSinceEpoch,
                                 
 
                           },
@@ -183,10 +183,6 @@ class AddTask extends StatelessWidget {
                         );
                         
 
-                         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                        print("folder name $folderName");
-                        print("folder index ${folderIndex}");
-                        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"); 
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

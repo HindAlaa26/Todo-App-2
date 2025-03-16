@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/cubit/todo_cubit.dart';
-import 'package:todo/screens/home_layout.dart';
+import 'package:todo/screens/home_layout/home_layout.dart';
 
 void main() {
   runApp(

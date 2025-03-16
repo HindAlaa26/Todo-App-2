@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:todo/cubit/todo_cubit.dart';
-import 'package:todo/screens/folder_screen.dart';
+import 'package:todo/screens/folders/folder_screen.dart';
 import 'package:todo/shared_component/custom_text.dart';
 
 Widget folderItem(Map model,context,int index)
 {
-   print(" 📂>>>>>>>>>>>>>>>>>>.Folder in folder Item $model");
-   print(" 📂📂>>>>>>>>>>>>>>>>>>.Folder in folder Item from Cubit ${ToDoCubit.get(context).folders}");
   return Dismissible(
     key: Key(model["id"].toString()),
 
@@ -98,7 +96,6 @@ Widget folderBuilder({
   required String textIsEmpty,
 })
 {
-         print(" 📂>>>>>>>>>>>>>>>>>>.Folder in folder builder $folder");
 
 
   return folder.isNotEmpty ? ListView.separated(

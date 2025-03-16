@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/cubit/todo_states.dart';
-import 'package:todo/shared_component/add_task.dart';
+import 'package:todo/shared_component/tasks/add_task.dart';
 import 'package:todo/shared_component/custom_text.dart';
-import 'package:todo/shared_component/task_item.dart';
+import 'package:todo/shared_component/tasks/task_item.dart';
 
 class FolderScreen extends StatelessWidget {
   final int folderIndex;
@@ -18,9 +18,7 @@ class FolderScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ToDoCubit, TodoStates>(
       builder: (context, state) {
-        print(
-          "📂 Folders List from cubit: ${ToDoCubit.get(context).folders}",
-        );
+      
     
         return Scaffold(
           key: scaffoldKey,

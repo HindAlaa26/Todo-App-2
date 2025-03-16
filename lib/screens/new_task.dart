@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/cubit/todo_states.dart';
-import 'package:todo/shared_component/add_folder.dart';
-import 'package:todo/shared_component/add_task.dart';
-  import 'package:todo/shared_component/folder_item.dart';
-import 'package:todo/shared_component/task_item.dart';
+import 'package:todo/shared_component/folders/add_folder.dart';
+import 'package:todo/shared_component/tasks/add_task.dart';
+  import 'package:todo/shared_component/folders/folder_item.dart';
+import 'package:todo/shared_component/tasks/task_item.dart';
 
 class NewTask extends StatelessWidget {
   NewTask({super.key});
@@ -22,7 +22,6 @@ class NewTask extends StatelessWidget {
       builder: (context, state) {
         var tasks = ToDoCubit.get(context).newTask;
         var folders = ToDoCubit.get(context).folders;
-       print(" 📂>>>>>>>>>>>>>>>>>>.Folder in new task screen $folders");
         return Scaffold(
           key: scaffoldKey,
           body: Column(

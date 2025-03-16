@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/cubit/todo_states.dart';
-import 'package:todo/screens/archieve_tasks.dart';
-import 'package:todo/screens/done_tasks.dart';
+import 'package:todo/screens/tasks/archieve_tasks.dart';
+import 'package:todo/screens/tasks/done_tasks.dart';
 import 'package:todo/screens/new_task.dart';
 
 class ToDoCubit extends Cubit<TodoStates>
@@ -82,7 +82,8 @@ List<Map> allTasks = [];
       'Task Name': taskName,
       'Task Date': taskDate,
       'Task Time': taskTime,
-      "status": "New"
+      "status": "New",
+      'id': DateTime.now().millisecondsSinceEpoch,
     });
 
     emit(TodoAddTaskState());
@@ -142,10 +143,7 @@ void updateTaskStatus({
    
   
    }
-   print("All Tasks: $allTasks");
-print("New Tasks: $newTask");
-print("Done Tasks: $doneTask");
-print("Archive Tasks: $archieveTask");
+
 
    emit(TodoGetTasksState()); 
    
@@ -244,10 +242,10 @@ void createFolder({required String folderName}) {
     "Folder Date": DateFormat.yMMMd().format(DateTime.now()),
     "Folder Time": DateFormat.jm().format(DateTime.now()),
     "status": "New",
+    "id": DateTime.now().millisecondsSinceEpoch,
     "tasks": <Map>[]
     }); 
 
-  print("📂 Updated Folders List After Adding Folder: $folders");
 
   emit(TodoFolderCreatedState());
  
@@ -257,12 +255,10 @@ void createFolder({required String folderName}) {
 
 void addTaskToFolder({required String folderName, required Map task, required int folderIndex}) {
   if (folderIndex < 0 || folderIndex >= folders.length) {
-    print("Error: Folder index is out of range: $folderIndex");
     return;
   }
 
   folders[folderIndex]["tasks"].add(task);
-  print(" Task added to folder: $folderName");
   emit(TodoAddTaskToFolderState());
 } 
 

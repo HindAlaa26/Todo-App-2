@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/cubit/todo_states.dart';
-import 'package:todo/shared_component/task_item.dart';
+import 'package:todo/shared_component/tasks/task_item.dart';
 
 class ArchieveTasks extends StatelessWidget {
   const ArchieveTasks({super.key});
