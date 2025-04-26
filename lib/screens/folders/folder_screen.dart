@@ -7,9 +7,10 @@ import 'package:todo/shared_component/custom_text.dart';
 import 'package:todo/shared_component/tasks/task_item.dart';
 
 class FolderScreen extends StatelessWidget {
-  final int folderIndex;
+  final int folderId;
   final String folderName;
-  FolderScreen({super.key, required this.folderIndex,required this.folderName});
+  List<Map> tasks;
+  FolderScreen({super.key, required this.folderId,required this.folderName, required this.tasks});
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
   var formdKey = GlobalKey<FormState>();
@@ -18,8 +19,8 @@ class FolderScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ToDoCubit, TodoStates>(
       builder: (context, state) {
-      
-    
+        List<Map> tasksInFolder = ToDoCubit.get(context).tasksInFolder;
+        print("📂 Folders tasks List from cubit (After Navigation): $tasksInFolder");
         return Scaffold(
           key: scaffoldKey,
           appBar: AppBar(
@@ -35,15 +36,15 @@ class FolderScreen extends StatelessWidget {
               textSize: 25,
             ),
           ),
-          body:  ToDoCubit.get(context).folders.isNotEmpty && folderIndex < ToDoCubit.get(context).folders.length
+          body:  tasksInFolder.isNotEmpty 
     ? tasksBuilder(
-        tasks: ToDoCubit.get(context).folders[folderIndex]["tasks"],
+        tasks:  tasksInFolder,
         iconEmpty: Icons.task_outlined,
         textIsEmpty: "No Task",
         isFolder: true,
-        folderIndex: folderIndex,
+        folderIndex: folderId,
       )
-    : Center(child: customText(text: "No folder found")),
+    : Center(child: customText(text: "No tasks found")),
     
           floatingActionButton: FloatingActionButton(
             heroTag: "folder tasks",
@@ -53,7 +54,7 @@ class FolderScreen extends StatelessWidget {
               scaffoldKey.currentState!.showBottomSheet((context) {
                 return AddTask(
                   folderName: folderName,
-                  folderIndex: folderIndex,
+                  folderIndex: folderId,
     
                   isFolder: true,
                   formdKey: formdKey,

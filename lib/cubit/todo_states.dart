@@ -5,18 +5,23 @@ abstract class TodoStates {}
  class TodoChangeTaskTimeState extends TodoStates{}
  class TodoChangeTaskDateState extends TodoStates{}
 
- class TodoAddTaskState extends TodoStates{}
- class TodoRemoveTaskState extends TodoStates {}
- class TodoUpdateTaskStatusState extends TodoStates {}
- class TodoGetTasksState extends TodoStates {}
+ class TodoCreateDatabaseState extends TodoStates {}
 
- class TodoAddTaskToFolderState extends TodoStates {}
- class TodoFolderCreatedState extends TodoStates {}
- class TodoRemoveFolderState extends TodoStates {}
- class TodoRemoveTaskInFolderState extends TodoStates {}
- class TodoUpdateTaskStatusInFolderState extends TodoStates {}
+ class TodoInsertDatabaseTasksState extends TodoStates {}
+ class TodoGetDatabasetasksLoadingState extends TodoStates {}
+ class TodoGetDatabasetasksState extends TodoStates {}
+ class TodoDeletetasksDatabaseState extends TodoStates {}
+ class TodoUpdatetaskStatusDatabaseState extends TodoStates {}
 
- class TodoGetTasksColorInFoldersState extends TodoStates {}
+
+ class TodoInsertDatabaseFolderState extends TodoStates {}
+ class TodoGetDatabasefoldersLoadingState extends TodoStates {}
+ class TodoGetDatabasefoldersState extends TodoStates {}
+ class TodoDeletefoldersDatabaseState extends TodoStates {}
+ class TodoInsertTasksToFolderState extends TodoStates {}
+ class TodoGetTasksFromFolderState extends TodoStates {}
+ class UpdateTasksInFolderDatabaseStatus extends TodoStates {}
+ class TodoDeletTasksFromFolderState extends TodoStates {}
 
  
 

@@ -3,7 +3,7 @@ import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/screens/folders/folder_screen.dart';
 import 'package:todo/shared_component/custom_text.dart';
 
-Widget folderItem(Map model,context,int index)
+Widget folderItem(Map model,context)
 {
   return Dismissible(
     key: Key(model["id"].toString()),
@@ -22,13 +22,15 @@ Widget folderItem(Map model,context,int index)
   ),
   direction: DismissDirection.startToEnd,
   onDismissed: (direction) {
-    ToDoCubit.get(context).removeFolder(folder: model);
+    
+    ToDoCubit.get(context).deletefoldersData(id: model["id"]);
     }, 
     child: InkWell(
-      onTap: (){
-print("📂 Folders List from cubit (Before Navigation): ${ToDoCubit.get(context).folders}");
+      onTap: () async {
+      List<Map> tasks = await ToDoCubit.get(context).getTasksfromFolderDatabase(folderId: model["id"]);
+      print("📂 Folders tasks List from cubit (Before Navigation): ${tasks}");
 
-        Navigator.push(context,MaterialPageRoute(builder: (context) => FolderScreen(folderIndex:index ,folderName: model["Folder Name"],),));
+        Navigator.push(context,MaterialPageRoute(builder: (context) => FolderScreen(folderId:model["id"] ,folderName: model["FolderName"],tasks: tasks,),));
       },
       child: Container(
       padding: EdgeInsets.all(18),
@@ -64,14 +66,14 @@ print("📂 Folders List from cubit (Before Navigation): ${ToDoCubit.get(context
               crossAxisAlignment: CrossAxisAlignment.center,
               spacing: 6,
               children: [
-                customText(text: model['Folder Name']?? "No Folder",textSize: 20),
+                customText(text: model['FolderName']?? "No Folder",textSize: 20),
                         Row(
       
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             SizedBox(width: 5,),
-                            customText(text: model['Folder Date'] ?? "No Date",textSize: 18,textColor: Colors.lightBlue.shade900),
-                            customText(text: model['Folder Time'] ?? "No Time",textColor: Colors.lightBlue.shade900, textFontWeight: FontWeight.bold),
+                            customText(text: model['FolderDate'] ?? "No Date",textSize: 18,textColor: Colors.lightBlue.shade900),
+                            customText(text: model['FolderTime'] ?? "No Time",textColor: Colors.lightBlue.shade900, textFontWeight: FontWeight.bold),
                            SizedBox(width: 5,),
                           ],
                         ),
@@ -99,7 +101,7 @@ Widget folderBuilder({
 
 
   return folder.isNotEmpty ? ListView.separated(
-      itemBuilder: (context, index) => folderItem( folder[index],  context, index),
+      itemBuilder: (context, index) => folderItem( folder[index],  context),
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.only(left: 25,right: 10),
         child: Divider(thickness: 1,color: Colors.blueGrey,),

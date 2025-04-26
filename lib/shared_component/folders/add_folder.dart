@@ -63,10 +63,11 @@ class AddFolder extends StatelessWidget {
                     minWidth: double.infinity,
                     onPressed: () {
                       if (formdKey.currentState!.validate()) {
-                          todoCubit.createFolder(
-                          folderName : folderNameController.text,
+                        todoCubit.insertFoldersToDatabase(
+                          folderName: folderNameController.text,
+                           
+                             );
                         
-                        );
 
                         ScaffoldMessenger.of(context).showSnackBar(
                        

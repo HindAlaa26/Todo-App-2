@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/cubit/todo_cubit.dart';
 import 'package:todo/shared_component/custom_text.dart';
 
-Widget taskItem(Map model,context,isFolder,folderIndex,taskIndex)
+Widget taskItem({required Map model,context,isFolder,folderIndex,taskIndex})
 {
   return Dismissible(
     key: Key(model["id"]?.toString() ?? ''),
@@ -21,8 +21,8 @@ Widget taskItem(Map model,context,isFolder,folderIndex,taskIndex)
   ),
   direction: DismissDirection.startToEnd,
   onDismissed: (direction) {
-      isFolder? ToDoCubit.get(context).removeTaskInFolder(folderIndex:folderIndex,taskIndex: taskIndex):
-         ToDoCubit.get(context).removeTask(task: model);
+      isFolder? ToDoCubit.get(context).deletTasksfromFolderDatabase(taskId: model['id'],folderId: folderIndex):
+       ToDoCubit.get(context).deletetasksData(id: model["id"]);
     }, 
     child: Container(
     padding: EdgeInsets.all(18),
@@ -48,14 +48,14 @@ Widget taskItem(Map model,context,isFolder,folderIndex,taskIndex)
         CircleAvatar(
           radius: 40,
           backgroundColor: Colors.blueGrey.shade200,
-          child: customText(text: model['Task Time']?? 'No Time',textColor: Colors.lightBlue.shade900),
+          child: customText(text: model['TaskTime']?? 'No Time',textColor: Colors.lightBlue.shade900),
         ),
         Expanded(
           child: Column(
             spacing: 6,
             children: [
-              customText(text: model['Task Name']?? 'No Name',textSize: 20),
-                      customText(text: model['Task Date']?? 'No Date',textSize: 18,textColor: Colors.lightBlue.shade900),
+              customText(text: model['TaskName']?? 'No Name',textSize: 20),
+                      customText(text: model['TaskDate']?? 'No Date',textSize: 18,textColor: Colors.lightBlue.shade900),
 
             ],
           ),
@@ -64,19 +64,19 @@ Widget taskItem(Map model,context,isFolder,folderIndex,taskIndex)
         SizedBox(width: 8),
         IconButton(onPressed: (){
         isFolder?
-           ToDoCubit.get(context).updateTaskInFolderStatus( task: model,folderIndex: folderIndex, status: "Done"):
+           ToDoCubit.get(context).updateTasksStatusInFolderDatabase(folderId: folderIndex ,taskId: model['id'],  isDone: true ,  status:"Done",isArchieve: false ):
        
            
-       ToDoCubit.get(context).updateTaskStatus( task: model, status: "Done");
+       ToDoCubit.get(context).updatetaskStatus(  id: model["id"], status: "Done");
         
-        }, icon: Icon(Icons.task_alt,color: isFolder?( model["doneColor"]? Colors.green : Colors.blueGrey) : Colors.blueGrey,size: 30,)),
+        }, icon: Icon(Icons.task_alt,color: isFolder?(( model["doneColor"]?? 0) == 1 ? Colors.green : Colors.blueGrey) : Colors.blueGrey,size: 30,)),
         IconButton(onPressed: (){
          isFolder?
-           ToDoCubit.get(context).updateTaskInFolderStatus( task: model,folderIndex: folderIndex, status: "Archieve"):
+                     ToDoCubit.get(context).updateTasksStatusInFolderDatabase(folderId: folderIndex , taskId: model['id'], isDone: false ,  status: "Archieve",isArchieve: true ):
+
+        ToDoCubit.get(context).updatetaskStatus( id: model["id"], status: "Archieve");
           
-        ToDoCubit.get(context).updateTaskStatus( task: model, status: "Archieve");
-          
-        }, icon: Icon(Icons.archive_outlined,color: isFolder? ( model["archiveColor"]? Colors.green : Colors.blueGrey) : Colors.blueGrey ,size: 30,)),
+        }, icon: Icon(Icons.archive_outlined,color: isFolder? ((model["archiveColor"] ?? 0) == 1 ? Colors.green : Colors.blueGrey) : Colors.blueGrey ,size: 30,)),
       ],
     ),
   ),
@@ -95,7 +95,7 @@ Widget tasksBuilder({
 {
 
   return tasks.isNotEmpty ? ListView.separated(
-      itemBuilder: (context, index) =>  taskItem(tasks[index],context,isFolder,folderIndex,index),
+      itemBuilder: (context, index) =>  taskItem(model: tasks[index],context: context,isFolder: isFolder,folderIndex: folderIndex,taskIndex: index),
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.only(left: 25,right: 10),
         child: Divider(thickness: 1,color: Colors.blueGrey,),

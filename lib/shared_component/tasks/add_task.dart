@@ -147,40 +147,31 @@ class AddTask extends StatelessWidget {
                     minWidth: double.infinity,
                     onPressed: () {
                       if (formdKey.currentState!.validate()) {
-                       isFolder? todoCubit.addTaskToFolder(
-                        folderName: folderName,
-                        folderIndex: folderIndex ?? -1,
-                        task: {
-                          "Task Name": taskNameController.text,
-                          "Task Date":  todoCubit.taskDate != null
+                       isFolder? todoCubit.insertTasksToFolderDatabase(
+                          taskName: taskNameController.text, 
+                          taskDate: todoCubit.taskDate != null
                                   ? todoCubit.taskDate!
-                                  : DateFormat.yMMMd().format(DateTime.now()),
-                          "Task Time": todoCubit.taskTime != null
+                                  : DateFormat.yMMMd().format(DateTime.now()), 
+                          taskTime: todoCubit.taskTime != null
                                   ? todoCubit.taskTime!
                                   : TimeOfDay.now().format(context),
-                                 "status": "New",
-                                 "doneColor" : false,
-                                 "archiveColor" : false,
-                                    'id': DateTime.now().millisecondsSinceEpoch,
-                                
-
-                          },
-                      
-                      
+                                  archiveColor: false ,
+                                  doneColor: false,
+                                   folderId: folderIndex ?? -1,
+                                  )
+                         
+                         
                         
-                             
-                        ):
-                         todoCubit.addTask(
+                                    :
+                        todoCubit.insertTasksToDatabase(
                           taskName: taskNameController.text,
-                          taskDate:
-                              todoCubit.taskDate != null
+                           taskDate:  todoCubit.taskDate != null
                                   ? todoCubit.taskDate!
                                   : DateFormat.yMMMd().format(DateTime.now()),
-                          taskTime:
-                              todoCubit.taskTime != null
+                           taskTime:      todoCubit.taskTime != null
                                   ? todoCubit.taskTime!
-                                  : TimeOfDay.now().format(context),
-                        );
+                                  : TimeOfDay.now().format(context),);
+                        
                         
 
 

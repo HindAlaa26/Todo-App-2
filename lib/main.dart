@@ -7,7 +7,7 @@ void main() {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => ToDoCubit()),
+        BlocProvider(create: (context) => ToDoCubit()..createDatabase()),
       ],
       child: MyApp(),
     ),

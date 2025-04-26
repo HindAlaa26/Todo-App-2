@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:todo/cubit/todo_states.dart';
 import 'package:todo/screens/tasks/archieve_tasks.dart';
 import 'package:todo/screens/tasks/done_tasks.dart';
@@ -54,6 +55,7 @@ class ToDoCubit extends Cubit<TodoStates>
 List<Map> newTask =[];
 List<Map> doneTask =[];
 List<Map> archieveTask =[];
+List<Map> folders =[];
 
 
  String? taskTime;
@@ -71,198 +73,258 @@ void changeTaskDate({value})
 }
 
 
-List<Map> allTasks = [];
+/// sql part 
 
- void addTask({
+ late Database database;
+    void createDatabase()  {
+    openDatabase(
+      'todo.db',
+      version: 1,
+      onCreate: (db, version) {
+        print("database created");
+        db.execute('CREATE TABLE If not exists tasks(id INTEGER PRIMARY KEY,TaskName TEXT,TaskDate TEXT, TaskTime TEXT, status TEXT)').then((value) {
+          print("tasks table created");
+        }).catchError((error) {
+          print("Error when creating tasks table ${error.toString()}");
+        });
+        db.execute('CREATE TABLE If not exists folders(id INTEGER PRIMARY KEY,FolderName TEXT,FolderDate TEXT, FolderTime TEXT,tasks TEXT, status TEXT)').then((value) {
+          print("folders table created");
+        }).catchError((error) {
+          print("Error when creating tasks table ${error.toString()}");
+        });
+        db.execute('CREATE TABLE If not exists folderTasks(id INTEGER PRIMARY KEY,folderId INTEGER,TaskName TEXT,TaskDate TEXT, TaskTime TEXT, status TEXT, archiveColor boolean , doneColor boolean )').then((value) {
+          print("folder tasks table created");
+        }).catchError((error) {
+          print("Error when creating tasks table ${error.toString()}");
+        });
+      },
+      onOpen: (db) {
+        gettasksDataFromDatabase(db);
+        getfoldersDataFromDatabase(db);
+         
+        print("database opened");
+      },
+    ).then((value) {
+      database = value;
+     
+      emit(TodoCreateDatabaseState());
+    });
+  } 
+ 
+ /// general tasks  
+   insertTasksToDatabase({
     required String taskName,
     required String taskDate,
     required String taskTime,
-  }) {
-    allTasks.add({
-      'Task Name': taskName,
-      'Task Date': taskDate,
-      'Task Time': taskTime,
-      "status": "New",
-      'id': DateTime.now().millisecondsSinceEpoch,
-    });
-
-    emit(TodoAddTaskState());
-    getTasks();
-  }
- 
-void updateTaskStatus({
-  required Map task,
-  required String status,
-}) {
-  int index = allTasks.indexWhere((element) =>
-      element["Task Name"] == task["Task Name"] &&
-      element["Task Date"] == task["Task Date"] &&
-      element["Task Time"] == task["Task Time"]);
-
-  if (index != -1) {
-    allTasks[index]["status"] = status;
-    getTasks();  
-    emit(TodoUpdateTaskStatusState());
-  } else {
-    print("Task not found in allTasks");
-  }
-}
-
- void removeTask({
-  required Map task,
- })
- {
-   allTasks.remove(task);
-  
-   emit(TodoRemoveTaskState());
    
-    getTasks();
- }
- void getTasks()
- {
-   newTask.clear();
+  }) async
+  {
+    await database.transaction((txn) {
+      return txn.rawInsert(
+          'INSERT INTO tasks(TaskName,TaskDate,TaskTime,status) VALUES("$taskName","$taskDate","$taskTime","New")')
+          .then((value) {
+        print("$value inserted successfully");
+        emit(TodoInsertDatabaseTasksState());
+        gettasksDataFromDatabase(database);
+      }).catchError((error) {
+        print("error when inserting new task record ${error.toString()}");
+      });
+    });
+  }
+
+   void gettasksDataFromDatabase(database)
+  {
+    
+     newTask.clear();
    doneTask.clear();
    archieveTask.clear();
+
+    emit(TodoGetDatabasetasksLoadingState());
+     database.rawQuery('SELECT * FROM tasks').then((value) {
+        print(">>>>>>>>>>>>>>>>>>>>>$value");
+       value.forEach((element) {
+         if(element["status"] == 'New')
+           {
+              newTask.add(element);
+           }
+         else if(element["status"] == 'Archieve')
+         {
+            archieveTask.add(element);
+         }
+         else
+         {
+           doneTask.add(element);
+         }
+
+       });
+       emit(TodoGetDatabasetasksState());
+     });
+  }
+ void updatetaskStatus({
+    required String status,
+    required int id,
+})async
+  {
+    database.rawUpdate(
+        'UPDATE tasks SET status = ? WHERE id = ?',
+        [status, id]).then((value) {
+         gettasksDataFromDatabase(database);
+          emit(TodoUpdatetaskStatusDatabaseState());
+
+    });
+  }
+ void deletetasksData({
+    required int id,
+  })async
+  {
+    database.rawDelete(
+        'DELETE FROM tasks WHERE id = ?', [id]).then((value) {
+      gettasksDataFromDatabase(database);
+      emit(TodoDeletetasksDatabaseState());
+
+    });
+  }
+
+// folder  
+   insertFoldersToDatabase({
+    required String folderName,
    
-   
-   for (var task in allTasks) {
-     if (task["status"] == "New")
-     {
-       newTask.add(task);
-      
-     }
-     else if (task["status"] == "Done")
-     {
-      doneTask.add(task);
+  }) async
+  {
+    await database.transaction((txn) {
+      return txn.rawInsert(
+          'INSERT INTO folders(FolderName,FolderDate,FolderTime,tasks,status) VALUES("$folderName","${DateFormat.yMMMd().format(DateTime.now())}","${DateFormat.jm().format(DateTime.now())}"," ","New")')
+          .then((value) {
+        print("$value inserted successfully");
+        emit(TodoInsertDatabaseFolderState());
+        getfoldersDataFromDatabase(database);
+      }).catchError((error) {
+        print("error when inserting new folder record ${error.toString()}");
+      });
+    });
+  }
+ void getfoldersDataFromDatabase(database)
+  {
+    
+     folders.clear();
+
+    emit(TodoGetDatabasefoldersLoadingState());
+     database.rawQuery('SELECT * FROM folders').then((value) {
+
+       value.forEach((element) {
+        folders.add(element);
+
+       });
+       emit(TodoGetDatabasefoldersState());
+     });
+  }
+ void deletefoldersData({
+    required int id,
+  })async
+  {
+    database.rawDelete(
+        'DELETE FROM folders WHERE id = ?', [id]).then((value) {
+      getfoldersDataFromDatabase(database);
+      emit(TodoDeletefoldersDatabaseState());
+
+    });
+  }
+
+// tasks in folder 
+  insertTasksToFolderDatabase({
+    required int folderId,
+    required String taskName,
+    required String taskDate,
+    required String taskTime,
+     required bool archiveColor,
+    required bool doneColor,
+  }) async
+  {
+    await database.insert("folderTasks",conflictAlgorithm: ConflictAlgorithm.replace,
+    {
+      'folderId' : folderId,
+      'TaskName' : taskName,
+      'TaskDate' : taskDate,
+      'TaskTime' : taskTime,
+      'status' : "New",
+      'archiveColor' : archiveColor ,
+      'doneColor' : doneColor
+    } 
      
-     }
-     else if(task["status"] == "Archieve")
+    );
+    getTasksfromFolderDatabase(folderId: folderId);
+    emit(TodoInsertTasksToFolderState());
+  }
+
+  List<Map> tasksInFolder = [];
+   Future<List<Map>> getTasksfromFolderDatabase({
+    required int folderId,
+  }) async
+  {
+     tasksInFolder = [];
+     tasksInFolder = await database.rawQuery("""
+                          Select * from folderTasks 
+                      where folderId == ?                   
+                        """, [folderId]);
+     emit(TodoGetTasksFromFolderState());
+    return tasksInFolder;
+  }
+  Future updateTasksStatusInFolderDatabase({
+    required int folderId,
+    required int taskId,
+    required bool isDone,
+    required bool isArchieve,
+    required String status,
+  }) async
+  {
+     if(isDone)
      {
-       archieveTask.add(task);
+      await database.update("folderTasks", 
+     {
+                'doneColor': 1,
+                'archiveColor': 0,
+                'status' : status,
+              },
+              where: 'id =?',
+              whereArgs: [taskId]);
      }
+     else if(isArchieve)
+     {
+await database.update("folderTasks", 
+     {
+                'doneColor': 0,
+                'archiveColor': 1,
+                'status' : status,
+              },
+              where: 'id =?',
+              whereArgs: [taskId]);
+     }
+    
+     
+     getTasksfromFolderDatabase(folderId: folderId);
+
+     emit(UpdateTasksInFolderDatabaseStatus());
+    
+  }
+
+     Future deletTasksfromFolderDatabase({
+    required int taskId,
+    required int folderId,
+  }) async
+  {
+     await database.delete(
+      "folderTasks",
+      where: 'id =?',
+              whereArgs: [taskId]);
+     getTasksfromFolderDatabase(folderId: folderId);
+     emit(TodoDeletTasksFromFolderState());
    
-  
-   }
-
-
-   emit(TodoGetTasksState()); 
-   
- }
- 
-
-
-/////////////////////////////////////////////////////////////////
-void removeTaskInFolder({
-  required int folderIndex,
-  required int taskIndex,
-}) {
-  if (folderIndex >= 0 && folderIndex < folders.length) {
-    if (taskIndex >= 0 && taskIndex < folders[folderIndex]["tasks"].length) {
-      folders[folderIndex]["tasks"].removeAt(taskIndex);
-      emit(TodoRemoveTaskInFolderState());
-    } else {
-      print("Error: Task index out of range");
-    }
-  } else {
-    print("Error: Folder index out of range");
-  }
-}
-
-
- 
- void removeFolder({
-  required Map folder,
- })
- {
-  
-   folders.remove(folder);
-   emit(TodoRemoveFolderState());
-   
- }
-
-
-
- 
-
-
-
- void getTasksColorInFolder() {
- 
-
-  for (var folder in folders) {
-    for (var task in folder["tasks"]) {
-      if (task["status"] == "New") {
-       task["doneColor"] = false;
-        task["archiveColor"] = false;
-      } else if (task["status"] == "Done") {
-        task["doneColor"] = true;
-         task["archiveColor"] = false;
-      } else if (task["status"] == "Archieve") {
-       task["archiveColor"] = true;
-        task["doneColor"] = false;
-      }
-    }
   }
 
-  emit(TodoGetTasksColorInFoldersState());  
-}
-
- 
-void updateTaskInFolderStatus({
-  required Map task,
-  required String status,
-  required int folderIndex,
-}) {
-  if (folderIndex < 0 || folderIndex >= folders.length) {
-    print("Error: Folder index is out of range: $folderIndex");
-    return;
-  }
-
-  int taskIndex = folders[folderIndex]["tasks"].indexWhere((t) =>
-      t["Task Name"] == task["Task Name"] &&
-      t["Task Date"] == task["Task Date"] &&
-      t["Task Time"] == task["Task Time"]);
-
-  if (taskIndex != -1) {
-    folders[folderIndex]["tasks"][taskIndex]["status"] = status;
-    getTasksColorInFolder();
-    emit(TodoUpdateTaskStatusInFolderState());
-  } else {
-    print("Task not found in folder");
-  }
-}
 
 
 
- List<Map> folders =[];
-
-void createFolder({required String folderName}) {
-   folders.add({
-   "Folder Name": folderName,
-    "Folder Date": DateFormat.yMMMd().format(DateTime.now()),
-    "Folder Time": DateFormat.jm().format(DateTime.now()),
-    "status": "New",
-    "id": DateTime.now().millisecondsSinceEpoch,
-    "tasks": <Map>[]
-    }); 
 
 
-  emit(TodoFolderCreatedState());
- 
-}
-
-
-
-void addTaskToFolder({required String folderName, required Map task, required int folderIndex}) {
-  if (folderIndex < 0 || folderIndex >= folders.length) {
-    return;
-  }
-
-  folders[folderIndex]["tasks"].add(task);
-  emit(TodoAddTaskToFolderState());
-} 
-
- 
- 
 
 }
